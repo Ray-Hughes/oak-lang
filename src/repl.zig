@@ -1,4 +1,7 @@
 const std = @import("std");
+const lexer = @import("lexer.zig");
+const parser = @import("parser.zig");
+const interpreter = @import("interpreter.zig");
 
 pub fn repl() !void {
     const allocator = std.heap.page_allocator;
@@ -7,10 +10,10 @@ pub fn repl() !void {
 
     while (true) {
         try stdout.print("> ", .{});
-        var line = try stdin.readUntilDelimiterOrEofAlloc(allocator, '\n');
-        const tokens = try tokenize(line, allocator);
-        const ast = parse(tokens);
-        interpret(ast);
+        const line = try stdin.readUntilDelimiterOrEofAlloc(allocator, '\n');
+        const tokens = try lexer.tokenize(line);
+        var ast = parser.parse(tokens);
+        _ = interpreter.interpret(&ast);
         allocator.free(line);
     }
 }

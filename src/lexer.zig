@@ -18,20 +18,20 @@ pub const Token = struct {
     value: []const u8,
 };
 
-pub fn tokenize(input: []const u8, allocator: *std.mem.Allocator) ![]Token {
-    var tokens = std.ArrayList(Token).init(*allocator);
+pub fn tokenize(input: []const u8) ![]Token {
+    var tokens = std.ArrayList(Token).init(std.heap.page_allocator);
 
     var i: usize = 0;
 
     while (i < input.len) {
         const c = input[i];
 
-        if (std.ascii.isSpace(c)) {
+        if (std.ascii.isWhitespace(c)) {
             i += 1;
             continue;
-        } else if (std.ascii.isAlpha(c)) {
+        } else if (std.ascii.isAlphabetic(c)) {
             const start = i;
-            while (i < input.len and std.ascii.isAlnum(input[i])) : (i += 1) {}
+            while (i < input.len and std.ascii.isAlphanumeric(input[i])) : (i += 1) {}
             try tokens.append(Token{ .typ = .Identifier, .value = input[start..i] });
         } else if (std.ascii.isDigit(c)) {
             const start = i;

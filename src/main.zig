@@ -27,9 +27,9 @@ pub fn main() !void {
     while (true) {
         try stdout.print("> ", .{});
         const line = try stdin.readUntilDelimiterOrEofAlloc(&allocator, '\n');
-        const tokens = try lexer.tokenize(line, &allocator);
-        const ast = parser.parse(tokens);
-        interpreter.interpret(&ast);
+        const tokens = try lexer.tokenize(line);
+        var ast = parser.parse(tokens);
+        _ = interpreter.interpret(&ast);
         allocator.free(line);
     }
 
@@ -38,23 +38,20 @@ pub fn main() !void {
 
 test "lexer test" {
     const input = "a = 1 + 2";
-    var allocator = std.testing.allocator;
-    const tokens = try lexer.tokenize(input, &allocator);
-    defer allocator.free(tokens);
+    const tokens = try lexer.tokenize(input);
 
-    try std.testing.expectEqual(tokens.len, 5);
+    try std.testing.expectEqual(tokens.len, 6); // Update to expect 6 tokens including EOF
     try std.testing.expectEqual(tokens[0].typ, lexer.TokenType.Identifier);
     try std.testing.expectEqual(tokens[1].typ, lexer.TokenType.Equals);
     try std.testing.expectEqual(tokens[2].typ, lexer.TokenType.Number);
     try std.testing.expectEqual(tokens[3].typ, lexer.TokenType.Plus);
     try std.testing.expectEqual(tokens[4].typ, lexer.TokenType.Number);
+    try std.testing.expectEqual(tokens[5].typ, lexer.TokenType.EOF);
 }
 
 test "parser test" {
     const input = "a = 1 + 2";
-    var allocator = std.testing.allocator;
-    const tokens = try lexer.tokenize(input, &allocator);
-    defer allocator.free(tokens);
+    const tokens = try lexer.tokenize(input);
 
     const ast = parser.parse(tokens);
     _ = ast;
@@ -63,11 +60,9 @@ test "parser test" {
 
 test "interpreter test" {
     const input = "a = 1 + 2";
-    var allocator = std.testing.allocator;
-    const tokens = try lexer.tokenize(input, &allocator);
-    defer allocator.free(tokens);
+    const tokens = try lexer.tokenize(input);
 
-    const ast = parser.parse(tokens);
-    interpreter.interpret(&ast);
+    var ast = parser.parse(tokens);
+    _ = interpreter.interpret(&ast);
     // Add assertions to check the result of the interpretation
 }

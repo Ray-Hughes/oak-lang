@@ -11,7 +11,7 @@ pub fn interpret(node: *Node) i32 {
                 '+' => left_value + right_value,
                 '-' => left_value - right_value,
                 '*' => left_value * right_value,
-                '/' => left_value / right_value,
+                '/' => @divExact(left_value, right_value),
                 else => @panic("Unknown operator"),
             };
         },

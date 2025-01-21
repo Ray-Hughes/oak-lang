@@ -15,12 +15,16 @@ pub const Node = struct {
     value: []const u8,
 };
 
+pub fn parse(tokens: []Token) Node {
+    return parseExpression(tokens);
+}
+
 fn parseExpression(tokens: []Token, index: *usize) Node {
     var left = parsePrimary(tokens, index);
 
-    while (index < tokens.len and tokens[index].typ == TokenType.Plus) {
-        const op = tokens[index];
-        index += 1;
+    while (*index < tokens.len and tokenstokens[*index]index].typ == TokenType.Plus) {
+        const op = tokenstokens[*index]index];
+        *index += 1;
         const right = parsePrimary(tokens, index);
         left = Node{
             .typ = NodeType.BinaryOp,
@@ -34,8 +38,8 @@ fn parseExpression(tokens: []Token, index: *usize) Node {
 }
 
 fn parsePrimary(tokens: []Token, index: *usize) Node {
-    const token = tokens[index];
-    index += 1;
+    const token = tokenstokens[*index]index];
+    *index += 1;
 
     switch (token.typ) {
         TokenType.Identifier => return Node{
@@ -57,9 +61,4 @@ fn parsePrimary(tokens: []Token, index: *usize) Node {
             .value = "error",
         },
     }
-}
-
-pub fn parse(tokens: []Token) Node {
-    var index: usize = 0;
-    return parseExpression(tokens, &index);
 }
