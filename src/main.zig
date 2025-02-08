@@ -18,13 +18,24 @@ pub fn main() !void {
     std.debug.print("Compiling: {s}\n", .{filename});
 
     var file = try std.fs.cwd().openFile(filename, .{});
-
     defer file.close();
 
+    // Print file size before reading
     const file_size = try file.getEndPos();
-    const source = try allocator.alloc(u8, file_size);
+    std.debug.print("File size: {}\n", .{file_size});
+
+    // Read the file into memory
+    const source = try file.readToEndAlloc(allocator, 1_000_000);
     defer allocator.free(source);
 
+    // Print raw bytes of the file
+    std.debug.print("Raw file bytes:\n", .{});
+    for (source) |byte| {
+        std.debug.print("{x} ", .{byte});
+    }
+    std.debug.print("\n", .{});
+
+    // Pass source code to lexer
     var lexer = Lexer.init(source);
     while (true) {
         const token = lexer.nextToken();

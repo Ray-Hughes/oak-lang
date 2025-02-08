@@ -16,11 +16,13 @@ pub const Lexer = struct {
             const c = self.source[self.position];
             self.position += 1;
 
+            std.debug.print("Scanning char: '{c}'\n", .{c}); // Debug print
+
             switch (c) {
-                ' ', '\t', '\r' => continue, // Ignore whitespace
+                ' ', '\t', '\r' => continue, // Ignore spaces and tabs
                 '\n' => {
-                    self.line += 1;
-                    continue;
+                    self.line += 1; // Track line number
+                    continue; // Skip newlines properly
                 },
                 '+' => return self.token(TokenType.Plus, "+"),
                 '-' => return self.token(TokenType.Minus, "-"),
@@ -90,6 +92,8 @@ pub const Lexer = struct {
             self.position += 1;
         }
         const lexeme = self.source[start..self.position];
+
+        std.debug.print("Identifier recognized: '{s}'\n", .{lexeme});
 
         // Manually map keywords to their corresponding TokenType
         const keywords = [_]struct { []const u8, TokenType }{

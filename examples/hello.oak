@@ -1,1 +1,3 @@
-print "Hello, Oak!"
+def hello
+  print "Hello, Oak!"
+end
